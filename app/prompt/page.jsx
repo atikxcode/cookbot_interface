@@ -229,7 +229,76 @@ export default function PromptPage() {
           Good afternoon, {userName}.
         </h1>
 
-        <div className="relative mb-6">
+        
+
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center py-10">
+            <Loader2 className="h-10 w-10 text-teal-400 animate-spin mb-4" />
+            <p className="text-gray-400">Cooking up the perfect recipe...</p>
+          </div>
+        )}
+
+        {response && !isLoading && (
+          <div className="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-xl p-6 shadow-xl border border-gray-700 animate-fadeIn">
+            <h3 className="text-2xl font-bold text-teal-400 mb-2">{response.title}</h3>
+            <p className="text-gray-300 mb-6">{response.description}</p>
+            
+            <div className="mb-6">
+              <h4 className="text-lg font-semibold mb-3 text-white border-b border-gray-700 pb-2 flex items-center justify-between">
+                <span>Ingredients</span>
+                {cartItems.length > 0 && (
+                  <button 
+                    onClick={() => setIsCartOpen(true)}
+                    className="text-sm bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded-full flex items-center"
+                  >
+                    <ShoppingCart className="h-3 w-3 mr-1" /> View Cart
+                  </button>
+                )}
+              </h4>
+              <ul className="space-y-2 text-gray-300">
+                {response.ingredients.map((ingredient, index) => {
+                  const isInCart = cartItems.includes(ingredient);
+                  
+                  return (
+                    <li key={index} className="flex items-center">
+                      <button 
+                        onClick={() => isInCart ? removeFromCart(ingredient) : addToCart(ingredient)}
+                        className={`flex items-center justify-center h-5 w-5 rounded mr-3 transition-colors ${
+                          isInCart 
+                            ? 'bg-teal-500 hover:bg-red-500' 
+                            : 'border border-gray-500 hover:border-teal-400'
+                        }`}
+                      >
+                        {isInCart && <Check className="h-3 w-3 text-white" />}
+                      </button>
+                      <span className={isInCart ? 'text-teal-400' : ''}>{ingredient}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+            
+            <div className="mb-6">
+              <h4 className="text-lg font-semibold mb-3 text-white border-b border-gray-700 pb-2">Instructions</h4>
+              <ol className="list-decimal pl-5 space-y-3 text-gray-300">
+                {response.instructions.map((step, index) => (
+                  <li key={index}>{step}</li>
+                ))}
+              </ol>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold mb-3 text-white border-b border-gray-700 pb-2">Chef's Tips</h4>
+              <ul className="list-disc pl-5 space-y-1 text-gray-300">
+                {response.tips.map((tip, index) => (
+                  <li key={index}>{tip}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+<div className="relative mt-6 mb-6">
           <form onSubmit={handleSubmit} className="w-full">
             <div ref={containerRef} className="relative">
               <textarea
@@ -329,73 +398,6 @@ export default function PromptPage() {
             ))}
           </div>
         </div>
-
-        {isLoading && (
-          <div className="flex flex-col items-center justify-center py-10">
-            <Loader2 className="h-10 w-10 text-teal-400 animate-spin mb-4" />
-            <p className="text-gray-400">Cooking up the perfect recipe...</p>
-          </div>
-        )}
-
-        {response && !isLoading && (
-          <div className="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-xl p-6 shadow-xl border border-gray-700 animate-fadeIn">
-            <h3 className="text-2xl font-bold text-teal-400 mb-2">{response.title}</h3>
-            <p className="text-gray-300 mb-6">{response.description}</p>
-            
-            <div className="mb-6">
-              <h4 className="text-lg font-semibold mb-3 text-white border-b border-gray-700 pb-2 flex items-center justify-between">
-                <span>Ingredients</span>
-                {cartItems.length > 0 && (
-                  <button 
-                    onClick={() => setIsCartOpen(true)}
-                    className="text-sm bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded-full flex items-center"
-                  >
-                    <ShoppingCart className="h-3 w-3 mr-1" /> View Cart
-                  </button>
-                )}
-              </h4>
-              <ul className="space-y-2 text-gray-300">
-                {response.ingredients.map((ingredient, index) => {
-                  const isInCart = cartItems.includes(ingredient);
-                  
-                  return (
-                    <li key={index} className="flex items-center">
-                      <button 
-                        onClick={() => isInCart ? removeFromCart(ingredient) : addToCart(ingredient)}
-                        className={`flex items-center justify-center h-5 w-5 rounded mr-3 transition-colors ${
-                          isInCart 
-                            ? 'bg-teal-500 hover:bg-red-500' 
-                            : 'border border-gray-500 hover:border-teal-400'
-                        }`}
-                      >
-                        {isInCart && <Check className="h-3 w-3 text-white" />}
-                      </button>
-                      <span className={isInCart ? 'text-teal-400' : ''}>{ingredient}</span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-            
-            <div className="mb-6">
-              <h4 className="text-lg font-semibold mb-3 text-white border-b border-gray-700 pb-2">Instructions</h4>
-              <ol className="list-decimal pl-5 space-y-3 text-gray-300">
-                {response.instructions.map((step, index) => (
-                  <li key={index}>{step}</li>
-                ))}
-              </ol>
-            </div>
-            
-            <div>
-              <h4 className="text-lg font-semibold mb-3 text-white border-b border-gray-700 pb-2">Chef's Tips</h4>
-              <ul className="list-disc pl-5 space-y-1 text-gray-300">
-                {response.tips.map((tip, index) => (
-                  <li key={index}>{tip}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
       </div>
 
       <style jsx>{`
